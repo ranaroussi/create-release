@@ -1,4 +1,4 @@
- a name: SemVer
+name: Versioning
 
 # Controls when the workflow will run
 on:
