@@ -57,6 +57,13 @@ jobs:
           echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
+      - name: Checkout
+      - name: Create git tag
+        run: |
+          git tag ${{ steps.gitversion.outputs.semVer }}
+      - name: Push git tag
+        run: git push origin ${{ steps.gitversion.outputs.semVer }}
+
   # display-semver:
   #   name: Display Semantic Version
   #   runs-on: ubuntu-latest
