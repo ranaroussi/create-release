@@ -24,19 +24,11 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # To use an output in another job, you have to map it to a job output.
-    outputs:      
-      branchName: ${{ steps.gitversion.outputs.branchName }} 
-      # semVer: ${{ steps.gitversion.outputs.semVer }}
-      # semVer: "1.${{ steps.gitversion.outputs.Minor }}.${{ steps.gitversion.outputs.Patch }}"
-      # buildMetaData: ${{ steps.gitversion.outputs.FullBuildMetaData }}
-    
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: write pr
         run: echo ${{ github.event.pull_request.body }}
 
-        # uses: gittools/actions/gitversion/setup@v0.9.7        
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0 #.10.2
         with:
@@ -58,15 +50,7 @@ jobs:
           echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
-      # - name: Write version file
-      #   uses: "DamianReeves/write-file-action@master"
-      #   with:
-      #     path: .version
-      #     write-mode: overwrite
-      #     contents: |
-      #       ${{ steps.gitversion.outputs.semVer }}
-
-      - name: Create version file
+      - name: Update version file
         run: |
             git config user.email "releasebot@github"
             git config user.name "Release Bot"
@@ -85,9 +69,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
           SEMVER: ${{ steps.gitversion.outputs.semVer }}
-        # run: |
-        #   echo "v ${{ steps.gitversion.outputs.semVer }}"
-        #   echo "v $SEMVER"
         uses: comnoco/create-release-action@v2
         with:
           tag_name: ${{ steps.gitversion.outputs.semVer }}
@@ -98,102 +79,3 @@ jobs:
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
-    
-      # - name: Push git tag
-
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
-# uses: ad-m/github-push-action@master
-#         with:
-#           github_token: ${{ secrets.GITHUB_TOKEN }}
-#           branch: ${{ github.ref }}
-  # display-semver:
-  #   name: Display Semantic Version
-  #   runs-on: ubuntu-latest
-  #   needs: calculate-version
-  #   env:
-  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-  #   steps:
-  #     - name: Display version
-  #       run: |
-  #         echo SemVer: $SEMVER
-
-  # create-tag:
-  #   name: Create a new tag
-  #   runs-on: ubuntu-latest
-  #   needs: calculate-version
-  #   if: contains(needs.calculate-version.outputs.branchName, 'main')
-  #   env:
-  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Create git tag
-  #       run: |
-  #         git tag $SEMVER
-  #     - name: Push git tag
-  #       run: git push origin $SEMVER
-
-  # create-release-notes:
-  #   name: Create Release Notes
-  #   runs-on: ubuntu-latest
-  #   needs: calculate-version
-  #   if: contains(needs.calculate-version.outputs.branchName, 'main') # Output variable accessed via `needs` context.
-  #   steps:
-  #     - run: |
-  #         # Output variables can also be accessed in steps, using an expression.
-  #         echo "Creating release notes for ${{ needs.calculate-version.outputs.branchName }} branch."
-
-  # create-release:
-  #   runs-on: ubuntu-latest
-  #   needs: calculate-version
-  #   if: contains(needs.calculate-version.outputs.branchName, 'main')
-  #   env:
-  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-  #     BUILD_META: ${{ needs.calculate-version.outputs.buildMetaData }}      
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0          
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-  #       with:
-  #         tag_name: $SEMVER
-  #         release_name: "v$SEMVER"
-  #         body: |
-  #           Build version: $SEMVER+$BUILD_META            
-  #           ${{ github.event.pull_request.body }}
-  #         draft: false
-  #         prerelease: false
-
-
-# - name: Create and populate .Renviron file
-#         env:
-#           AWS_HOST: ${{ secrets.AWS_HOST }}
-#           AWS_PORT: ${{ secrets.AWS_PORT }}
-#           AWS_PW: ${{ secrets.AWS_PW }}
-#           AWS_USER: ${{ secrets.AWS_USER }}
-#           DBNAME: ${{ secrets.DBNAME }}
-#         run: |
-#           touch .Renviron
-#           echo aws_host="$AWS_HOST" >> .Renviron
-#           echo aws_port="$AWS_PORT" >> .Renviron
-#           echo aws_pw="$AWS_PW" >> .Renviron
-#           echo aws_user="$AWS_USER" >> .Renviron
-#           echo dbname="$DBNAME" >> .Renviron
-
-#           echo "cat .Renviron"
-#           cat .Renviron
-
-#           echo "ls -a ."
-#           ls -a .
-
-#           echo "ls -a ${{ github.workspace }}"
-#           ls -a ${{ github.workspace }}
-#         shell: bash
