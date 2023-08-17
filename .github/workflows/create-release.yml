@@ -64,7 +64,8 @@ jobs:
           tag_name: ${{ steps.gitversion.outputs.semVer }}
           release_name: "v${{ steps.gitversion.outputs.semVer }}"
           body: |
-            Build version: ${{ steps.gitversion.outputs.semVer }}+${{ steps.gitversion.outputs.ShortSha }} (PR #${{ github.event.pull_request.number }})            
+            Build version: ${{ steps.gitversion.outputs.semVer }}+${{ steps.gitversion.outputs.ShortSha }}
+            PR #${{ github.event.pull_request.number }}
 
             ### Release notes
             ${{ github.event.pull_request.body }}
