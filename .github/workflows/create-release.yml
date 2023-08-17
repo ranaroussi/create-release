@@ -62,15 +62,16 @@ jobs:
         id: "tag_create"
         run: |
           git tag ${{ steps.gitversion.outputs.semVer }}
-      - name: Push git tag
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-        # run: git push origin ${{ steps.gitversion.outputs.semVer }}
+          git push origin ${{ steps.gitversion.outputs.semVer }}
+
+      # - name: Push git tag
+
         # with:
         #   github_token: ${{ secrets.GITHUB_TOKEN }}
-
+# uses: ad-m/github-push-action@master
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           branch: ${{ github.ref }}
   # display-semver:
   #   name: Display Semantic Version
   #   runs-on: ubuntu-latest
