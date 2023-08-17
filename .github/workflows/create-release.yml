@@ -59,7 +59,7 @@ jobs:
 
       - name: Create git tag
         id: "tag_create"
-        uses: rickstaa/action-create-tag@v2
+        uses: rickstaa/action-create-tag@v1
         with:
           tag: ${{ steps.gitversion.outputs.semVer }}
           tag_exists_error: false
