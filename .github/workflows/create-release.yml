@@ -32,6 +32,9 @@ jobs:
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: write pr
+        run: echo github.event.pull_request
+        
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
