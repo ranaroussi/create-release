@@ -33,7 +33,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: write pr
-        run: echo ${{ github.event.pull_request }}
+        run: echo ${{ github.event.pull_request.body }}
         
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
@@ -129,3 +129,29 @@ jobs:
   #           $SEMVER+$BUILD_META            
   #         draft: false
   #         prerelease: false
+
+
+# - name: Create and populate .Renviron file
+#         env:
+#           AWS_HOST: ${{ secrets.AWS_HOST }}
+#           AWS_PORT: ${{ secrets.AWS_PORT }}
+#           AWS_PW: ${{ secrets.AWS_PW }}
+#           AWS_USER: ${{ secrets.AWS_USER }}
+#           DBNAME: ${{ secrets.DBNAME }}
+#         run: |
+#           touch .Renviron
+#           echo aws_host="$AWS_HOST" >> .Renviron
+#           echo aws_port="$AWS_PORT" >> .Renviron
+#           echo aws_pw="$AWS_PW" >> .Renviron
+#           echo aws_user="$AWS_USER" >> .Renviron
+#           echo dbname="$DBNAME" >> .Renviron
+
+#           echo "cat .Renviron"
+#           cat .Renviron
+
+#           echo "ls -a ."
+#           ls -a .
+
+#           echo "ls -a ${{ github.workspace }}"
+#           ls -a ${{ github.workspace }}
+#         shell: bash
