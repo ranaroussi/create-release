@@ -68,6 +68,8 @@ jobs:
 
       - name: Commit version file
         run: |
+            git config user.email "releasebot@github"
+            git config user.name "Release Bot"
             git add .version
             git commit -m "Updated version file to ${{ steps.gitversion.outputs.semVer }}"
       
