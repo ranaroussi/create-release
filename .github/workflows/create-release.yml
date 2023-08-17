@@ -58,20 +58,22 @@ jobs:
           echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
-      - name: Write version file
-        uses: "DamianReeves/write-file-action@master"
-        with:
-          path: .version
-          write-mode: overwrite
-          contents: |
-            ${{ steps.gitversion.outputs.semVer }}
+      # - name: Write version file
+      #   uses: "DamianReeves/write-file-action@master"
+      #   with:
+      #     path: .version
+      #     write-mode: overwrite
+      #     contents: |
+      #       ${{ steps.gitversion.outputs.semVer }}
 
-      - name: Commit version file
+      - name: Create version file
         run: |
             git config user.email "releasebot@github"
             git config user.name "Release Bot"
+            echo ${{ steps.gitversion.outputs.semVer }} > .version
             git add .version
             git commit -m "Updated version file to ${{ steps.gitversion.outputs.semVer }}"
+            git push origin
       
       - name: Create git tag
         id: "tag_create"
