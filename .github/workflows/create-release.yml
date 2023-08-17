@@ -26,9 +26,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # - name: write pr
-      #   run: echo ${{ github.event.pull_request.body }}
-
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0 #.10.2
         with:
@@ -43,19 +40,12 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0 #.10.2
   
-      # - name: Display Version
-      #   env:
-      #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-      #   run: |
-      #     echo SemVer: ${{ steps.gitversion.outputs.semVer }}
-      #     echo $SEMVER
-
       - name: Update version file
         run: |
-            echo "Updating version file to ${{ steps.gitversion.outputs.semVer }}"
-            git config user.email "releasebot@github"
+            echo "Updating version file to ${{ steps.gitversion.outputs.semVer }}..."
+            git config user.email "no-reply@github.com"
             git config user.name "Release Bot"
-            echo ${{ steps.gitversion.outputs.semVer }} > .version
+            echo "${{ steps.gitversion.outputs.semVer }} (${{ steps.gitversion.outputs.ShortSha }})"> .version
             git add .version
             git commit -m "Updated version file to ${{ steps.gitversion.outputs.semVer }}"
             git push origin
@@ -74,8 +64,9 @@ jobs:
           tag_name: ${{ steps.gitversion.outputs.semVer }}
           release_name: "v${{ steps.gitversion.outputs.semVer }}"
           body: |
-            Build version: production-${{ steps.gitversion.outputs.FullSemVer }}.${{ steps.gitversion.outputs.ShortSha }}
-            PR #${{ github.event.pull_request.number }}
+            Build version: ${{ steps.gitversion.outputs.semVer }}+${{ steps.gitversion.outputs.ShortSha }} (PR #${{ github.event.pull_request.number }})            
+
+            ### Release notes
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
