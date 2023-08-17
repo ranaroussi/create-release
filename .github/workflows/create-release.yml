@@ -36,9 +36,10 @@ jobs:
         run: echo ${{ github.event.pull_request.body }}
         
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
-        with:
-          versionSpec: '5.x'
+        uses: GitTools/actions@v0.10.2
+        # uses: gittools/actions/gitversion/setup@v0.9.7
+        # with:
+          # versionSpec: '5.x'
 
       - name: Checkout code
         uses: actions/checkout@v3
