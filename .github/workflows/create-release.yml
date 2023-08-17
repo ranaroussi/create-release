@@ -15,7 +15,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a job called "calculate-version"
-  calculate-version:
+  create-release:
+    name: Create a new release
     # Condition for the runner
     # if: github.event.pull_request.merged == true
     
@@ -26,141 +27,102 @@ jobs:
     outputs:      
       branchName: ${{ steps.gitversion.outputs.branchName }} 
       # semVer: ${{ steps.gitversion.outputs.semVer }}
-      semVer: "1.${{ steps.gitversion.outputs.Minor }}.${{ steps.gitversion.outputs.Patch }}"
-      buildMetaData: ${{ steps.gitversion.outputs.FullBuildMetaData }}
+      # semVer: "1.${{ steps.gitversion.outputs.Minor }}.${{ steps.gitversion.outputs.Patch }}"
+      # buildMetaData: ${{ steps.gitversion.outputs.FullBuildMetaData }}
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      # create a tag
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
 
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Determine Version
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0
 
-      - name: Display GitVersion variables (without prefix)
-        run: |
-          echo "Major: ${{ steps.gitversion.outputs.Major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.Minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.Patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.PreReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.PreReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.PreReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.PreReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.WeightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.BuildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.BuildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.FullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.MajorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.SemVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.LegacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.LegacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.FullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.BranchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.EscapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.Sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.ShortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.NuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.NuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.NuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.VersionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.CommitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.UncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.CommitDate }}"
-      
-      # - name: Determine Version
-      #   uses: gittools/actions/gitversion/execute@v0.9.7
-      - name: Display SemVer
-        run: |
-          echo "SemVer: $GITVERSION_SEMVER" && echo "$version" && echo "$major.$minor.$patch"
-          
-      # - name: Create git tag
-      #   run: |
-      #     git tag $GITVERSION_SEMVER
-      # - name: Push git tag
-      #   run: git push origin $GITVERSION_SEMVER
-        
-      # # Runs a single command using the runners shell
-      # - name: Run a one-line script
-      #   run: echo The PR was merged
-
-      # # Runs a set of commands using the runners shell
-      # - name: Run a multi-line script
-      #   run: |
-      #     echo Add other actions to build,
-      #     echo test, and deploy your project.
-
-  display-semver:
-    name: Display Semantic Version
-    runs-on: ubuntu-latest
-    needs: calculate-version
-    env:
-      SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-    steps:
+        # run: |
+        #   echo
+        #   echo "mix-compile--warnings-as-errors=$(mix compile --warnings-as-errors)\n" >> $GITHUB_OUTPUT
+        #   echo "mix-format--check-formatted=$(mix format --check-formatted)\n" >> $GITHUB_OUTPUT
+        #   echo "mix-ecto_create=$(mix ecto.create)\n" >> $GITHUB_OUTPUT
+        #   echo "mix-ecto_migrate=$(mix ecto.migrate)\n" >> $GITHUB_OUTPUT
+        #   echo "mix-test=$(mix test)\n" >> $GITHUB_OUTPUT
+        # id: run_tests
+  
       - name: Display version
-        run: |
-          echo SemVer: $SEMVER
-
-  create-tag:
-    name: Create a new tag
-    runs-on: ubuntu-latest
-    needs: calculate-version
-    if: contains(needs.calculate-version.outputs.branchName, 'main')
-    env:
-      SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-    steps:
-      - name: Create git tag
-        run: |
-          git tag $SEMVER
-      - name: Push git tag
-        run: git push origin $SEMVER
-
-  create-release-notes:
-    name: Create Release Notes
-    runs-on: ubuntu-latest
-    needs: calculate-version
-    if: contains(needs.calculate-version.outputs.branchName, 'main') # Output variable accessed via `needs` context.
-    steps:
-      - run: |
-          # Output variables can also be accessed in steps, using an expression.
-          echo "Creating release notes for ${{ needs.calculate-version.outputs.branchName }} branch."
-
-  create-release:
-    runs-on: ubuntu-latest
-    needs: calculate-version
-    if: contains(needs.calculate-version.outputs.branchName, 'main')
-    env:
-      SEMVER: ${{ needs.calculate-version.outputs.semVer }}
-      BUILD_META: ${{ needs.calculate-version.outputs.buildMetaData }}      
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0          
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: $SEMVER
-          release_name: "v$SEMVER"
-          body: |
-            Full build vesion
-            $SEMVER+$BUILD_META            
-          draft: false
-          prerelease: false
+          SEMVER: ${{ needs.calculate-version.outputs.semVer }}
+        run: |
+          echo SemVer: ${{ steps.gitversion.outputs.Major }}
+          echo $SEMVER
+
+  # display-semver:
+  #   name: Display Semantic Version
+  #   runs-on: ubuntu-latest
+  #   needs: calculate-version
+  #   env:
+  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
+  #   steps:
+  #     - name: Display version
+  #       run: |
+  #         echo SemVer: $SEMVER
+
+  # create-tag:
+  #   name: Create a new tag
+  #   runs-on: ubuntu-latest
+  #   needs: calculate-version
+  #   if: contains(needs.calculate-version.outputs.branchName, 'main')
+  #   env:
+  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Create git tag
+  #       run: |
+  #         git tag $SEMVER
+  #     - name: Push git tag
+  #       run: git push origin $SEMVER
+
+  # create-release-notes:
+  #   name: Create Release Notes
+  #   runs-on: ubuntu-latest
+  #   needs: calculate-version
+  #   if: contains(needs.calculate-version.outputs.branchName, 'main') # Output variable accessed via `needs` context.
+  #   steps:
+  #     - run: |
+  #         # Output variables can also be accessed in steps, using an expression.
+  #         echo "Creating release notes for ${{ needs.calculate-version.outputs.branchName }} branch."
+
+  # create-release:
+  #   runs-on: ubuntu-latest
+  #   needs: calculate-version
+  #   if: contains(needs.calculate-version.outputs.branchName, 'main')
+  #   env:
+  #     SEMVER: ${{ needs.calculate-version.outputs.semVer }}
+  #     BUILD_META: ${{ needs.calculate-version.outputs.buildMetaData }}      
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0          
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+  #       with:
+  #         tag_name: $SEMVER
+  #         release_name: "v$SEMVER"
+  #         body: |
+  #           Full build vesion
+  #           $SEMVER+$BUILD_META            
+  #         draft: false
+  #         prerelease: false
