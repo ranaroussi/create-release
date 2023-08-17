@@ -58,6 +58,19 @@ jobs:
           echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
+      - name: Write version file
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: .version
+          write-mode: overwrite
+          contents: |
+            ${{ steps.gitversion.outputs.semVer }}
+
+      - name: Commit version file
+        run: |
+            git add .version
+            git commit -m "Updated version file to ${{ steps.gitversion.outputs.semVer }}"
+      
       - name: Create git tag
         id: "tag_create"
         run: |
@@ -68,21 +81,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
           SEMVER: ${{ steps.gitversion.outputs.semVer }}
-        run: |
-          echo "v ${{ steps.gitversion.outputs.semVer }}"
-          echo "v $SEMVER"
-        # uses: comnoco/create-release-action@v2
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        #   SEMVER: ${{ steps.gitversion.outputs.semVer }}
-        # with:
-        #   tag_name: $SEMVER
-        #   release_name: "v $SEMVER"
-        #   body: |
-        #     Build version: $SEMVER + $BUILD_META            
-        #     ${{ github.event.pull_request.body }}
-        #   draft: false
-        #   prerelease: false
+        # run: |
+        #   echo "v ${{ steps.gitversion.outputs.semVer }}"
+        #   echo "v $SEMVER"
+        uses: comnoco/create-release-action@v2
+        with:
+          tag_name: ${{ steps.gitversion.outputs.semVer }}
+          release_name: "v${{ steps.gitversion.outputs.semVer }}"
+          body: |
+            Build version: production-${{ steps.gitversion.outputs.FullSemVer }}.${{ steps.gitversion.outputs.ShortSha }}
+            PR #${{ github.event.pull_request.number }}
+            ${{ github.event.pull_request.body }}
+          draft: false
+          prerelease: false
     
       # - name: Push git tag
 
