@@ -58,12 +58,22 @@ jobs:
           echo $SEMVER
 
       - name: Create git tag
+        id: "tag_create"
+        uses: rickstaa/action-create-tag@v2
+        with:
+          tag: ${{ steps.gitversion.outputs.semVer }}
+          tag_exists_error: false
+          message: "Latest release"
+      - name: Print git tag      
         run: |
-          git tag ${{ steps.gitversion.outputs.semVer }}
-      - name: Push git tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        run: git push origin ${{ steps.gitversion.outputs.semVer }}
+          echo "Tag already present: ${{ steps.tag_create.outputs.tag_exists }}"
+          
+      #   run: |
+      #     git tag ${{ steps.gitversion.outputs.semVer }}
+      # - name: Push git tag
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      #   run: git push origin ${{ steps.gitversion.outputs.semVer }}
 
   # display-semver:
   #   name: Display Semantic Version
