@@ -39,7 +39,6 @@ jobs:
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
-          useConfigFile: true
 
       - name: Checkout code
         uses: actions/checkout@v3
