@@ -57,7 +57,6 @@ jobs:
           echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
-      - name: Checkout
       - name: Create git tag
         run: |
           git tag ${{ steps.gitversion.outputs.semVer }}
