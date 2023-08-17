@@ -26,7 +26,7 @@ jobs:
     outputs:      
       branchName: ${{ steps.gitversion.outputs.branchName }} 
       # semVer: ${{ steps.gitversion.outputs.semVer }}
-      semVer: "1.${{ steps.gitversion.outputs.Minor }.${{ steps.gitversion.outputs.Patch }}"
+      semVer: "1.${{ steps.gitversion.outputs.Minor }}.${{ steps.gitversion.outputs.Patch }}"
       buildMetaData: ${{ steps.gitversion.outputs.FullBuildMetaData }}
     
     # Steps represent a sequence of tasks that will be executed as part of the job
