@@ -59,7 +59,7 @@ jobs:
         env:
           SEMVER: ${{ needs.calculate-version.outputs.semVer }}
         run: |
-          echo SemVer: ${{ steps.gitversion.outputs.Major }}
+          echo SemVer: ${{ steps.gitversion.outputs.semVer }}
           echo $SEMVER
 
   # display-semver:
